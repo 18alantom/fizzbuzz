@@ -1,17 +1,15 @@
 const std = @import("std");
 
 pub fn main() !void {
-    const writer = std.io.getStdOut().writer();
-
-    for (0..100_000_000) |i| {
+    for (0..1000_000_000) |i| {
         if (i % 3 == 0 and i % 5 == 0) {
-            _ = try writer.write("FizzBuzz\n");
+            _ = std.c.printf("FizzBuzz\n");
         } else if (i % 3 == 0) {
-            _ = try writer.write("Fizz\n");
+            _ = std.c.printf("Fizz\n");
         } else if (i % 5 == 0) {
-            _ = try writer.write("Buzz\n");
+            _ = std.c.printf("Buzz\n");
         } else {
-            _ = try writer.print("{d}\n", .{i});
+            _ = std.c.printf("%d\n", i);
         }
     }
 }
