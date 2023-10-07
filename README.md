@@ -19,8 +19,10 @@ Memory: 32768MiB
 
 ## Runs
 
+_Note: reasoning is mostly a guess._
+
 1.  **naive implementation**: `9.89MiB/s`
     - `0:01:10 for 700 MiB (n: 100_000_000) at 9.89MiB/s`
 2.  **use `std.c.printf`**: `127MiB/s`
     - `0:00:58 for 7.33 GiB (n: 1_000_000_000) at 127MiB/s`
-    - C std lib [`printf`](https://man7.org/linux/man-pages/man3/fprintf.3.html) directly writes to stdout, [`writer.write`](https://github.com/ziglang/zig/blob/d68f39b5412e0aeb59d71c9f676221212261dc8c/lib/std/fs/file.zig#L1157) hits multiple conditionals also probably cause try .
+    - C std lib [`printf`](https://man7.org/linux/man-pages/man3/fprintf.3.html) directly writes to stdout, [`writer.write`](https://github.com/ziglang/zig/blob/d68f39b5412e0aeb59d71c9f676221212261dc8c/lib/std/fs/file.zig#L1157) consists of several comparisons, and might return errors which pulls in `builtin.returnError`.
