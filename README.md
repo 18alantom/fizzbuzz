@@ -19,6 +19,6 @@ Memory: 32768MiB
 
 | #   | Description           | `n`           | Average   |
 | --- | --------------------- | ------------- | --------- |
-| 0   | Naive implementation. | `100_000_000` | 9.89MiB/s |
+| 0   | naive implementation | `100_000_000` | 9.89MiB/s |
 
 **Baseline**: `/dev/zero pv > /dev/null` is 34.6GiB/s
