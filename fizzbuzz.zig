@@ -21,25 +21,38 @@ pub fn main() !void {
     bw.flush();
 }
 
-pub fn fmtDigits(buf: []u8, n: usize) [:0]u8 {
-    const fl: f32 = @floatFromInt(n);
-    var num_digits: usize = undefined;
-    if (n == 0 or n == 1) {
-        num_digits = 1;
+/// Based off of Int formatting from Zig source code
+/// located in src/std/fmt.zig.
+///
+/// Probably faster cause:
+/// - Larger numbers are copied in 2s (`digits2`).
+/// - Doesn't use log10 (unsure).
+fn fmtDigits(buf: []u8, n: usize) []u8 {
+    var index: usize = buf.len - 1;
+    var a = n;
+    while (a >= 100) : (a = @divTrunc(a, 100)) {
+        index -= 2;
+        buf[index..][0..2].* = digits2(@as(usize, @intCast(a % 100)));
+    }
+
+    if (a < 10) {
+        index -= 1;
+        buf[index] = '0' + @as(u8, @intCast(a));
     } else {
-        num_digits = @intFromFloat(@ceil(@log10(fl)));
+        index -= 2;
+        buf[index..][0..2].* = digits2(@as(usize, @intCast(a)));
     }
 
-    var d = n;
-    for (0..(num_digits)) |i| {
-        const m: u8 = @intCast(@mod(d, 10));
-        buf[num_digits - i - 1] = m + 48;
-        d /= 10;
-    }
+    buf[buf.len - 1] = '\n';
+    return buf[index..];
+}
 
-    buf[num_digits] = '\n';
-    buf[num_digits + 1] = 0;
-    return buf[0..(num_digits + 1) :0];
+fn digits2(value: usize) [2]u8 {
+    return ("0001020304050607080910111213141516171819" ++
+        "2021222324252627282930313233343536373839" ++
+        "4041424344454647484950515253545556575859" ++
+        "6061626364656667686970717273747576777879" ++
+        "8081828384858687888990919293949596979899")[value * 2 ..][0..2].*;
 }
 
 const BufferedWriter = struct {
