@@ -1,8 +1,10 @@
 # Fast Fizz Buzz using Zig
 
 `fizzbuzz.zig` generates [fizz buzz](https://en.wikipedia.org/wiki/Fizz_buzz)
-output. This is piped through [pv](http://www.ivarch.com/programs/pv.shtml) that
-measures data throughput. The output is finally piped to `/dev/null`
+output. This is piped through [pv](http://www.ivarch.com/programs/pv.shtml) to
+measure data throughput. The output is finally piped to `/dev/null`.
+
+This code aims to maximize fizz buzz data throughput.
 
 ## Exec-env
 
@@ -26,3 +28,14 @@ _Note: reasoning is mostly a guess._
 2.  **use `std.c.printf`**: `127MiB/s`
     - `0:00:58 for 7.33 GiB (n: 1_000_000_000) at 127MiB/s`
     - C std lib [`printf`](https://man7.org/linux/man-pages/man3/fprintf.3.html) directly writes to stdout, [`writer.write`](https://github.com/ziglang/zig/blob/d68f39b5412e0aeb59d71c9f676221212261dc8c/lib/std/fs/file.zig#L1157) consists of several comparisons, and might return errors which pulls in `builtin.returnError`.
+3.  **use buffered writer, faster custom int formatter**: `192MiB/s`
+    - `0:00:38 for 7.33 GiB (n: 1_000_000_000) at 192MiB/s`
+    - Consists of 2 improvements:
+      1. Used a buffered writer which writes output to a 4MB buffer before flushing it to
+         stdout using `c.printf`. The buffer size was based off of [this experiment](https://gist.github.com/18alantom/fac21902a1e7b295cac16f3772f42df3#file-fast_zeros-zig) which is probably
+         still not optimized for whatever lies between printf invocation and stdout receiving
+         the bytes. But it's still better than calling printf for every line of output.
+      2. Used a custom int formatter for digit to string conversion. Using
+         `fmt.bufPrint` makes it slower than the previous run probably cause
+         error handling and call stack.
+4.  **??**: `??MiB/s`
