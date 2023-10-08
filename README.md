@@ -23,12 +23,12 @@ Memory: 32768MiB
 
 _Note: reasoning is mostly a guess._
 
-1.  **naive implementation**: `9.89MiB/s`
+1.  **naive implementation**: `9.89MiB/s` [src](https://github.com/18alantom/fizzbuzz/blob/173578984cae2e13f3f3f3a5dd4369926d96b84a/fizzbuzz.zig)
     - `0:01:10 for 700 MiB (n: 100_000_000) at 9.89MiB/s`
 2.  **use `std.c.printf`**: `127MiB/s`
-    - `0:00:58 for 7.33 GiB (n: 1_000_000_000) at 127MiB/s`
+    - `0:00:58 for 7.33 GiB (n: 1_000_000_000) at 127MiB/s` [src](https://github.com/18alantom/fizzbuzz/blob/62fbe6c14ece93f747061e9afb6705a073f78c60/fizzbuzz.zig)
     - C std lib [`printf`](https://man7.org/linux/man-pages/man3/fprintf.3.html) directly writes to stdout, [`writer.write`](https://github.com/ziglang/zig/blob/d68f39b5412e0aeb59d71c9f676221212261dc8c/lib/std/fs/file.zig#L1157) consists of several comparisons, and might return errors which pulls in `builtin.returnError`.
-3.  **use buffered writer, faster custom int formatter**: `192MiB/s`
+3.  **use buffered writer, faster custom int formatter**: `192MiB/s` [src](https://github.com/18alantom/fizzbuzz/blob/845f435d12495149a0bf72940dca5d61e30678a7/fizzbuzz.zig)
     - `0:00:38 for 7.33 GiB (n: 1_000_000_000) at 192MiB/s`
     - Consists of 2 improvements:
       1. Used a buffered writer which writes output to a 4MB buffer before flushing it to
