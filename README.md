@@ -38,4 +38,8 @@ _Note: reasoning is mostly a guess._
       2. Used a custom int formatter for digit to string conversion. Using
          `fmt.bufPrint` makes it slower than the previous run probably cause
          error handling and call stack.
-4.  **??**: `??MiB/s`
+4.  **use `c.write`**: `205MiB/s`
+    - `00:00:36 for 7.33 GiB (n: 1_000_000_000) at 205MiB/s` [src](https://github.com/18alantom/fizzbuzz/blob/06a04aaa83a4971885ea0529c9c083ff26a3b975/fizzbuzz.zig)
+    - Formatting is not required so `c.write` to `STDOUT` can be used directly.
+      Speed up probably cause no checks for format strings.
+5.  **??**: `??MiB/s`

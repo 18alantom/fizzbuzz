@@ -5,6 +5,7 @@
 *.a
 *.o
 *.asm
+*.txt
 
 temp.*
 /temp
