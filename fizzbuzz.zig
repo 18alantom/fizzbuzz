@@ -99,11 +99,19 @@ const BufferedWriter = struct {
     }
 
     pub fn flush(self: *Self) void {
-        if (self.rem != 0) {
-            self.buf[self.idx] = 0;
+        var len = self.idx;
+        if (self.rem == 0) {
+            len = self.buf.len;
         }
 
-        _ = std.c.printf(self.buf);
+        while (true) {
+            const rc = std.c.write(std.os.STDOUT_FILENO, self.buf.ptr, len);
+            switch (std.os.errno(rc)) {
+                .INTR => continue,
+                else => break,
+            }
+        }
+
         self.idx = 0;
         self.rem = self.buf.len;
     }
