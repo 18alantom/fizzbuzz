@@ -43,9 +43,15 @@ _Note: reasoning is mostly a guess._
     - Formatting is not required so `c.write` to `STDOUT` can be used directly.
       Speed up probably cause no checks for format strings.
 5.  **use SIMD `@Vector`**: `354MiB/s`
-    - `00:0021 for 7.33GiB (n: 1_000_000_000) at 354MiB/s` [src](https://github.com/18alantom/fizzbuzz/blob/bdc1040a03691a85ddcea4798b7cdd880854fdef/fizzbuzz.zig)
+    - `00:00:21 for 7.33GiB (n: 1_000_000_000) at 354MiB/s` [src](https://github.com/18alantom/fizzbuzz/blob/bdc1040a03691a85ddcea4798b7cdd880854fdef/fizzbuzz.zig)
     - Since Fizz Buzz output shape repeats every 15 iterations, vectorization can be used
       to calculate the next set of 8 numbers in a single iteration. In using vectorization,
       the write function had to be regressed to using `c.printf` since given
       formatting, for now that would be the fastest.
-6.  **??**: `??MiB/s`
+6.  **use 1MB output buffer**: `368MiB/s`
+    - `00:00:20 for 7.33GiB (n: 1_000_000_000) at 368MiB/s` [src](https://github.com/18alantom/fizzbuzz/blob/cba7ea4123e123a6324302c4ad5a0da62107a5e1/fizzbuzz.zig)
+    - Use `setvbuf` to set stdout to use full buffering (`IOFBF`) with a 1MB buffer. Without
+      this, writes to stdout are flushed on new lines by default and full buffering should
+      lead to fewer writes.
+      
+7.  **??**: `??MiB/s`

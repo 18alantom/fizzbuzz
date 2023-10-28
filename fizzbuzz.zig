@@ -7,7 +7,7 @@ const c = @cImport({
 const count: u64 = 1_000_000_000;
 
 pub fn main() !void {
-    var buf: [1_048_576]u8 = undefined;
+    var buf: [1_048_576 / 2]u8 = undefined;
     _ = c.setvbuf(
         c.__stdoutp,
         &buf,
