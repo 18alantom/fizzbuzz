@@ -1,13 +1,25 @@
 const std = @import("std");
+const c = @cImport({
+    @cInclude("stdio.h");
+    @cInclude("stdlib.h");
+});
 
 const count: u64 = 1_000_000_000;
 
 pub fn main() !void {
+    var buf: [1_048_576]u8 = undefined;
+    _ = c.setvbuf(
+        c.__stdoutp,
+        &buf,
+        c._IOFBF,
+        buf.len,
+    );
+
     const template = "%d\n%d\nFizz\n%d\nBuzz\nFizz\n%d\n%d\nFizz\nBuzz\n%d\nFizz\n%d\n%d\nFizzBuzz\n";
     var digits = @Vector(8, u64){ 1, 2, 4, 7, 8, 11, 13, 14 };
 
     while (digits[7] < count) {
-        _ = std.c.printf(
+        _ = c.printf(
             template,
             digits[0],
             digits[1],
@@ -24,13 +36,13 @@ pub fn main() !void {
     var i = digits[7] - 15 + 2;
     while (i < count) : (i += 1) {
         if (i % 3 == 0 and i % 5 == 0) {
-            _ = std.c.printf("FizzBuzz\n");
+            _ = c.printf("FizzBuzz\n");
         } else if (i % 3 == 0) {
-            _ = std.c.printf("Fizz\n");
+            _ = c.printf("Fizz\n");
         } else if (i % 5 == 0) {
-            _ = std.c.printf("Buzz\n");
+            _ = c.printf("Buzz\n");
         } else {
-            _ = std.c.printf("%d\n", i);
+            _ = c.printf("%d\n", i);
         }
     }
 }
